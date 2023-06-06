@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+      "module": "ES2015",
+      "declaration": true,
+      "outDir": "./lib",
+      "moduleResolution": "Node",
+
+    }
+  }

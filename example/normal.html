@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+    <script src='../lib/v-spliter.umd.js'></script>
+
+</head>
+
+<body>
+
+    <div id="app">
+        <div style="background: greenyellow; height: 200px;">
+            普通的HTML
+        </div>
+        <div class="v-spliter" style="height: 20px;">
+
+        </div>
+        <div style="background: burlywood; height: calc(100% - 220px); display: flex;">
+            <div style="background: yellowgreen; height: 100%; width: 200px;"></div>
+            <div class="v-spliter" style="width: 20px; "></div>
+            <div></div>
+        </div>
+    </div>
+
+    <script>
+        [...document.querySelectorAll('.v-spliter')].forEach((el) => {
+            VUE_V_SPLITER.directive(el, {
+                value: {
+
+                }
+            })
+        })
+    </script>
+</body>
+
+<style>
+    html,
+    body,
+    #app {
+        width: 100%;
+        height: 100%;
+        padding: 0px;
+        margin: 0px;
+    }
+</style>
+
+</html>

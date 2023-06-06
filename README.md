@@ -2,6 +2,7 @@
 
 ## 支持Vue2,Vue3,和普通的html开发
 
+## [demo示例](https://rzl.github.io/v-spliter/)
 ### 使用方式很简单 
 
 ### ems引入

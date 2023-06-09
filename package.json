@@ -1,6 +1,6 @@
 {
   "name": "v-spliter",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "",
   "main": "lib/v-spliter.js",
   "type": "module",
@@ -8,8 +8,22 @@
     "build": "rollup -c",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rzl/v-spliter.git"
+  },
+  "keywords": [
+    "file",
+    "local",
+    "stroage",
+    "cache"
+  ],
   "author": "RZL",
-  "license": "ISC",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rzl/v-spliter/issues"
+  },
+  "homepage": "https://rzl.github.io/v-spliter/",
   "devDependencies": {
     "@rollup/plugin-typescript": "^11.1.1",
     "rollup": "^3.23.0"

@@ -1,7 +1,5 @@
 import * as VUE from 'vue';
-/**
- *
- */
+import { Directive } from 'vue';
 export declare enum E_layout {
     auto = "auto",
     horizontal = "horizontal",
@@ -11,26 +9,62 @@ export interface I_binding extends VUE.DirectiveBinding {
     /**
      * vue传进来的值
      */
-    value: Value;
+    value: I_value;
 }
 export interface I_onResizeData {
-    el: any;
-    preEl: any;
-    nextEl: any;
-    parentEl: any;
-    offset: any;
-    layout: any;
-    perElRect: any;
-    nextElRect: any;
-    parentElRect: any;
-    parentStyle: any;
-    preStyle: any;
-    nextStyle: any;
+    /**
+     * 当前被拖动元素
+     */
+    el: HTMLElement;
+    /**
+     * 相邻的上一个元素
+     */
+    preEl: HTMLElement;
+    /**
+     * 相邻的下一个元素
+     */
+    nextEl: HTMLElement;
+    /**
+     * 父元素
+     */
+    parentEl: HTMLElement;
+    /**
+     * 拖动的距离
+     */
+    offset: number;
+    /**
+     * 布局方向 horizontal，vertical
+     */
+    layout: string;
+    /**
+     * 相邻的上一个元素的RECT
+     */
+    perElRect: DOMRect;
+    /**
+     * 相邻的下一个元素的RECT
+     */
+    nextElRect: DOMRect;
+    /**
+     * 父元素的RECT
+     */
+    parentElRect: DOMRect;
+    /**
+     * 垂直时为父元素的高度，否则为宽度
+     */
+    parentStyle: number;
+    /**
+     * 垂直时为上一个相邻元素的高度，否则为宽度
+     */
+    preStyle: number;
+    /**
+     * 垂直时下一个相邻元素的高度，否则为宽度
+     */
+    nextStyle: number;
 }
 /**
  * vue传进来的值
  */
-export interface Value {
+export interface I_value {
     /**
      * 布局，
      * auto 自动判断，根据允许拖动的元素右上角坐标与被拖动的元素下一个元素左上角进行判断
@@ -65,15 +99,31 @@ export interface Value {
      */
     disableNext?: boolean;
 }
-declare var _default: VUE.Plugin<any[]>;
+export interface I_option {
+    /**
+     * vue注册的指令名称
+     * @default spliter 使用时用v-spliter
+     */
+    name?: string;
+    /**
+     * 是否改变当前元素相邻的下一个元素的宽高
+     * @default false 默认不改变
+     */
+    defaultDisableNext?: boolean;
+}
 declare global {
     interface Window {
-        VUE_V_SPLITER: any;
+        VUE_V_SPLITER: {
+            version: string;
+            install(Vue: VUE.App<Element>, opt: I_option): any;
+            directive: Directive<HTMLElement, I_binding>;
+        };
     }
 }
 declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {
-        vSpliter?: Directive<any, Value>;
+        vSpliter?: Directive<any, I_value>;
     }
 }
-export default _default;
+declare const _default_1: VUE.Plugin<any[]>;
+export default _default_1;

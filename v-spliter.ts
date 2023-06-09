@@ -1,41 +1,72 @@
 import * as VUE from 'vue'
 import { Directive } from 'vue';
 
-/**
- * 
- */
 export enum E_layout {
     auto = 'auto', //自动判断
     horizontal = 'horizontal', //横向
     vertical = 'vertical'  //竖向
 }
-
-
 export interface I_binding extends VUE.DirectiveBinding {
     /**
      * vue传进来的值
      */
-    value: Value
+    value: I_value
+}
+export interface I_onResizeData {
+    /**
+     * 当前被拖动元素
+     */
+    el: HTMLElement
+    /**
+     * 相邻的上一个元素
+     */
+    preEl: HTMLElement
+    /**
+     * 相邻的下一个元素
+     */
+    nextEl: HTMLElement
+    /**
+     * 父元素
+     */
+    parentEl: HTMLElement
+    /**
+     * 拖动的距离
+     */
+    offset: number
+    /**
+     * 布局方向 horizontal，vertical
+     */
+    layout: string
+    /**
+     * 相邻的上一个元素的RECT
+     */
+    perElRect: DOMRect
+    /**
+     * 相邻的下一个元素的RECT
+     */
+    nextElRect: DOMRect
+    /**
+     * 父元素的RECT
+     */
+    parentElRect: DOMRect
+    /**
+     * 垂直时为父元素的高度，否则为宽度
+     */
+    parentStyle: number
+    /**
+     * 垂直时为上一个相邻元素的高度，否则为宽度
+     */
+    preStyle: number
+    /**
+     * 垂直时下一个相邻元素的高度，否则为宽度
+     */
+    nextStyle: number
 }
 
-export interface I_onResizeData {
-    el, //当前被拖动元素
-    preEl, //相邻的上一个元素
-    nextEl, //相邻的下一个元素
-    parentEl, //父元素
-    offset, //拖动距离
-    layout //布局方向 horizontal，vertical
-    perElRect,
-    nextElRect,
-    parentElRect,
-    parentStyle, //垂直时为父元素的高度，否则为宽度
-    preStyle,   //垂直时为上一个相邻元素的高度，否则为宽度
-    nextStyle  //垂直时下一个相邻元素的高度，否则为宽度
-}
 /**
  * vue传进来的值
  */
-export interface Value {
+export interface I_value {
     /**
      * 布局， 
      * auto 自动判断，根据允许拖动的元素右上角坐标与被拖动的元素下一个元素左上角进行判断
@@ -62,7 +93,7 @@ export interface Value {
      * }
      * 
      */
-    onResize?: (data:I_onResizeData)=> Boolean | undefined
+    onResize?: (data: I_onResizeData) => Boolean | undefined
     /**
      * 默认值 undefined，false 拖动元素计算下一个元素的宽度
      * true 时 拖动元素后不重新计算下一个元素的宽度
@@ -70,8 +101,22 @@ export interface Value {
      */
     disableNext?: boolean
 }
+
+export interface I_option {
+    /**
+     * vue注册的指令名称
+     * @default spliter 使用时用v-spliter
+     */
+    name?: string
+    /**
+     * 是否改变当前元素相邻的下一个元素的宽高
+     * @default false 默认不改变
+     */
+    defaultDisableNext?: boolean
+}
+
 var defaultDisableNext = false
-var install = function install(Vue: VUE.App<Element>, opt = {
+var install = function install(Vue: VUE.App<Element>, opt = <I_option>{
     /**
      * 指令的名称 到时在vue 里面使用 v-spliter
      */
@@ -104,7 +149,7 @@ var directive = <Directive>function (el: HTMLElement, binding: I_binding) {
 
     // el.style.background = 'red'
 
-    var _value = <Value>{ layout: E_layout.auto }
+    var _value = <I_value>{ layout: E_layout.auto }
     var value = binding.value ? Object.assign(_value, binding.value) : _value
 
     var disableNext = value.disableNext === undefined ? defaultDisableNext : value.disableNext
@@ -226,21 +271,29 @@ var directive = <Directive>function (el: HTMLElement, binding: I_binding) {
         onend(event)
     }
 }
+
+
 var _default = {
     version: '1.0.0',
     install,
     directive
-} as VUE.Plugin
+}
 
 declare global {
     interface Window {
-        VUE_V_SPLITER
+        VUE_V_SPLITER: {
+            version: string,
+            install(Vue: VUE.App<Element>, opt: I_option)
+            directive: Directive<HTMLElement, I_binding>
+        }
     }
 }
+
+
 declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {
-        vSpliter?: Directive<any, Value>
+        vSpliter?: Directive<any, I_value>
     }
 }
 if (window) { window.VUE_V_SPLITER = _default }
-export default _default
+export default _default as VUE.Plugin

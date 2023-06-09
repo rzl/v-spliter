@@ -1,6 +1,6 @@
 {
   "name": "v-spliter",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "",
   "main": "lib/v-spliter.js",
   "type": "module",

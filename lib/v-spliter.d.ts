@@ -13,6 +13,20 @@ export interface I_binding extends VUE.DirectiveBinding {
      */
     value: Value;
 }
+export interface I_onResizeData {
+    el: any;
+    preEl: any;
+    nextEl: any;
+    parentEl: any;
+    offset: any;
+    layout: any;
+    perElRect: any;
+    nextElRect: any;
+    parentElRect: any;
+    parentStyle: any;
+    preStyle: any;
+    nextStyle: any;
+}
 /**
  * vue传进来的值
  */
@@ -31,6 +45,7 @@ export interface Value {
      *      el, //当前被拖动元素
      *      preEl, //相邻的上一个元素
      *      nextEl, //相邻的下一个元素
+     *      parentEl, //父元素
      *      offset, //拖动距离
      *      layout //布局方向 horizontal，vertical
      *      perElRect: preEl.getClientRects()[0],
@@ -42,7 +57,7 @@ export interface Value {
      * }
      *
      */
-    onResize?: Function;
+    onResize?: (data: I_onResizeData) => Boolean | undefined;
     /**
      * 默认值 undefined，false 拖动元素计算下一个元素的宽度
      * true 时 拖动元素后不重新计算下一个元素的宽度
@@ -54,6 +69,11 @@ declare var _default: VUE.Plugin<any[]>;
 declare global {
     interface Window {
         VUE_V_SPLITER: any;
+    }
+}
+declare module '@vue/runtime-core' {
+    interface ComponentCustomProperties {
+        vSpliter?: Directive<any, Value>;
     }
 }
 export default _default;

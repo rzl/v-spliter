@@ -2,7 +2,7 @@
   "name": "v-spliter",
   "version": "1.0.1",
   "description": "",
-  "main": "lib/v-spliter.esm.js",
+  "main": "lib/v-spliter.js",
   "type": "module",
   "scripts": {
     "build": "rollup -c",

@@ -18,6 +18,20 @@ export interface I_binding extends VUE.DirectiveBinding {
     value: Value
 }
 
+export interface I_onResizeData {
+    el, //当前被拖动元素
+    preEl, //相邻的上一个元素
+    nextEl, //相邻的下一个元素
+    parentEl, //父元素
+    offset, //拖动距离
+    layout //布局方向 horizontal，vertical
+    perElRect,
+    nextElRect,
+    parentElRect,
+    parentStyle, //垂直时为父元素的高度，否则为宽度
+    preStyle,   //垂直时为上一个相邻元素的高度，否则为宽度
+    nextStyle  //垂直时下一个相邻元素的高度，否则为宽度
+}
 /**
  * vue传进来的值
  */
@@ -48,7 +62,7 @@ export interface Value {
      * }
      * 
      */
-    onResize?: Function,
+    onResize?: (data:I_onResizeData)=> Boolean | undefined
     /**
      * 默认值 undefined，false 拖动元素计算下一个元素的宽度
      * true 时 拖动元素后不重新计算下一个元素的宽度
@@ -69,7 +83,7 @@ var install = function install(Vue: VUE.App<Element>, opt = {
 
         Vue.directive(opt.name, directive)
     } else {
-        Vue.directive(opt.name, {inserted: directive} as any)
+        Vue.directive(opt.name, { inserted: directive } as any)
     }
 }
 
@@ -93,7 +107,7 @@ var directive = <Directive>function (el: HTMLElement, binding: I_binding) {
     var _value = <Value>{ layout: E_layout.auto }
     var value = binding.value ? Object.assign(_value, binding.value) : _value
 
-    var disableNext = value.disableNext===undefined ? defaultDisableNext : value.disableNext
+    var disableNext = value.disableNext === undefined ? defaultDisableNext : value.disableNext
     var layout = value.layout
 
     function testLayout() {
@@ -121,7 +135,7 @@ var directive = <Directive>function (el: HTMLElement, binding: I_binding) {
 
     testLayout()
 
-    var onstart = (event : Touch | MouseEvent) => {
+    var onstart = (event: Touch | MouseEvent) => {
         testLayout()
         active = true
         buttonDown = true
@@ -129,11 +143,11 @@ var directive = <Directive>function (el: HTMLElement, binding: I_binding) {
         offset = layout == E_layout.vertical ? event.clientY : event.clientX
     }
 
-    var onmove = (event : Touch | MouseEvent) => {
+    var onmove = (event: Touch | MouseEvent) => {
         if (active && buttonDown) {
             var preStyle = ((layout == E_layout.vertical ? event.clientY : event.clientX) - offset + offsetStyle)
             var parentStyle = parentEl.getClientRects()[0][attr]
-            var nextStyle =  parentStyle - preStyle - elOffset
+            var nextStyle = parentStyle - preStyle - elOffset
             if (value.onResize) {
                 var res = value.onResize({
                     el, preEl, nextEl, offset, layout, parentEl,
@@ -155,7 +169,7 @@ var directive = <Directive>function (el: HTMLElement, binding: I_binding) {
         }
     }
 
-    var onend = (event : Touch | MouseEvent) => {
+    var onend = (event: Touch | MouseEvent) => {
         active = false
         buttonDown = false
         offsetStyle = layout == E_layout.vertical ? preEl.getClientRects()[0].height : preEl.getClientRects()[0].width
@@ -222,7 +236,11 @@ declare global {
     interface Window {
         VUE_V_SPLITER
     }
-  }
-
-if (window) {window.VUE_V_SPLITER = _default}
+}
+declare module '@vue/runtime-core' {
+    interface ComponentCustomProperties {
+        vSpliter?: Directive<any, Value>
+    }
+}
+if (window) { window.VUE_V_SPLITER = _default }
 export default _default

@@ -17,7 +17,7 @@ export default [
       dir: 'lib',
       format: 'es',
       name: 'VUE_V_SPLITER',
-      entryFileNames: '[name].esm.js',
+      entryFileNames: '[name].js',
     },
     plugins: [typescript()],
   }

@@ -35,7 +35,7 @@ export interface I_onResizeData {
     /**
      * 布局方向 horizontal，vertical
      */
-    layout: string;
+    layout: E_layout;
     /**
      * 相邻的上一个元素的RECT
      */
@@ -91,7 +91,7 @@ export interface I_value {
      * }
      *
      */
-    onResize?: (data: I_onResizeData) => Boolean | undefined;
+    onResize?: (data: I_onResizeData) => Boolean | undefined | void;
     /**
      * 默认值 undefined，false 拖动元素计算下一个元素的宽度
      * true 时 拖动元素后不重新计算下一个元素的宽度
@@ -104,7 +104,7 @@ export interface I_option {
      * vue注册的指令名称
      * @default spliter 使用时用v-spliter
      */
-    name?: string;
+    name?: string | 'spliter';
     /**
      * 是否改变当前元素相邻的下一个元素的宽高
      * @default false 默认不改变
@@ -116,13 +116,13 @@ declare global {
         VUE_V_SPLITER: {
             version: string;
             install(Vue: VUE.App<Element>, opt: I_option): any;
-            directive: Directive<HTMLElement, I_binding>;
+            directive: Directive<HTMLElement, I_value>;
         };
     }
 }
 declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {
-        vSpliter?: Directive<any, I_value>;
+        vSpliter?(el?: HTMLElement | I_value, value?: I_value): any;
     }
 }
 declare const _default_1: VUE.Plugin<any[]>;

@@ -36,7 +36,7 @@ export interface I_onResizeData {
     /**
      * 布局方向 horizontal，vertical
      */
-    layout: string
+    layout: E_layout
     /**
      * 相邻的上一个元素的RECT
      */
@@ -93,7 +93,7 @@ export interface I_value {
      * }
      * 
      */
-    onResize?: (data: I_onResizeData) => Boolean | undefined
+    onResize?: (data: I_onResizeData) => Boolean | undefined | void
     /**
      * 默认值 undefined，false 拖动元素计算下一个元素的宽度
      * true 时 拖动元素后不重新计算下一个元素的宽度
@@ -107,7 +107,7 @@ export interface I_option {
      * vue注册的指令名称
      * @default spliter 使用时用v-spliter
      */
-    name?: string
+    name?: string | 'spliter'
     /**
      * 是否改变当前元素相邻的下一个元素的宽高
      * @default false 默认不改变
@@ -116,14 +116,16 @@ export interface I_option {
 }
 
 var defaultDisableNext = false
-var install = function install(Vue: VUE.App<Element>, opt = <I_option>{
-    /**
-     * 指令的名称 到时在vue 里面使用 v-spliter
-     */
-    name: 'spliter',
-    defaultDisableNext: false
-}) {
-    defaultDisableNext = opt.defaultDisableNext
+var install = function install(Vue: VUE.App<Element>, opt: I_option) {
+    let defaultOpt = {
+        name: 'spliter',
+        defaultDisableNext: false
+    }
+    if (!opt) {
+        opt = defaultOpt
+    }
+    if (!opt.name) {opt.name = defaultOpt.name}
+    defaultDisableNext = !!opt.defaultDisableNext
     if (Number(Vue.version.charAt(0)) >= 3) {
 
         Vue.directive(opt.name, directive)
@@ -151,9 +153,8 @@ var directive = <Directive>function (el: HTMLElement, binding: I_binding) {
 
     var _value = <I_value>{ layout: E_layout.auto }
     var value = binding.value ? Object.assign(_value, binding.value) : _value
-
     var disableNext = value.disableNext === undefined ? defaultDisableNext : value.disableNext
-    var layout = value.layout
+    var layout = <E_layout>value.layout
 
     function testLayout() {
         var elNextRect = nextEl.getClientRects()[0]
@@ -284,7 +285,7 @@ declare global {
         VUE_V_SPLITER: {
             version: string,
             install(Vue: VUE.App<Element>, opt: I_option)
-            directive: Directive<HTMLElement, I_binding>
+            directive: Directive<HTMLElement, I_value>
         }
     }
 }
@@ -292,7 +293,9 @@ declare global {
 
 declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {
-        vSpliter?: Directive<any, I_value>
+        vSpliter?(el?: HTMLElement | I_value, value?: I_value)
+          
+        
     }
 }
 if (window) { window.VUE_V_SPLITER = _default }
